@@ -1,0 +1,11 @@
+# Services Directory
+
+This directory contains business logic services that implement core functionality.
+
+Services are responsible for:
+- Business logic implementation
+- Data processing and transformation
+- External API integrations (AI services)
+- Orchestrating multiple operations
+
+Services are called by controllers and work with models and utilities.

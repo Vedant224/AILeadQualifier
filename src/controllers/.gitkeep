@@ -1,0 +1,11 @@
+# Controllers Directory
+
+This directory contains Express route controllers that handle HTTP requests and responses.
+
+Controllers are responsible for:
+- Request validation and parsing
+- Calling appropriate service methods
+- Formatting and returning responses
+- Error handling and status codes
+
+Each controller focuses on a specific domain (offers, leads, scoring, etc.)

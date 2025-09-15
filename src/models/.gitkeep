@@ -1,0 +1,11 @@
+# Models Directory
+
+This directory contains TypeScript interfaces and types for data models.
+
+Models define:
+- Data structure interfaces
+- Type definitions
+- Validation schemas
+- Data transformation utilities
+
+Models represent the core data entities: Offers, Leads, ScoredLeads, etc.

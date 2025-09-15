@@ -1,0 +1,11 @@
+# Utils Directory
+
+This directory contains utility functions and helper modules.
+
+Utils include:
+- Data validation helpers
+- File processing utilities
+- Error handling utilities
+- Common helper functions
+
+These are reusable functions used across controllers and services.
