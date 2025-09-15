@@ -17,6 +17,13 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
 
+// Import routes
+import offerRoutes from './routes/offerRoutes';
+
+// Import middleware
+import { handleJsonParsingError } from './middleware/validation';
+import { errorLogger } from './middleware/requestLogger';
+
 // Load environment variables
 dotenv.config();
 
@@ -46,9 +53,11 @@ app.use(cors({
  * Request parsing middleware
  * - express.json(): Parses JSON request bodies
  * - express.urlencoded(): Parses URL-encoded request bodies
+ * - handleJsonParsingError: Custom JSON parsing error handler
  */
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(handleJsonParsingError);
 
 /**
  * Logging middleware
@@ -72,6 +81,11 @@ app.get('/health', (req, res) => {
     version: '1.0.0'
   });
 });
+
+/**
+ * API Routes
+ */
+app.use('/offer', offerRoutes);
 
 /**
  * Root endpoint with API information
@@ -104,6 +118,11 @@ app.use('*', (req, res) => {
     }
   });
 });
+
+/**
+ * Error logging middleware
+ */
+app.use(errorLogger);
 
 /**
  * Global error handling middleware
