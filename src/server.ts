@@ -20,6 +20,7 @@ import dotenv from 'dotenv';
 // Import routes
 import offerRoutes from './routes/offerRoutes';
 import leadRoutes from './routes/leadRoutes';
+import scoringRoutes from './routes/scoringRoutes';
 
 // Import middleware
 import { handleJsonParsingError } from './middleware/validation';
@@ -88,6 +89,8 @@ app.get('/health', (req, res) => {
  */
 app.use('/offer', offerRoutes);
 app.use('/leads', leadRoutes);
+app.use('/score', scoringRoutes);
+app.use('/results', scoringRoutes); // Mount results endpoints
 
 /**
  * Root endpoint with API information
@@ -102,6 +105,7 @@ app.get('/', (req, res) => {
       offer: 'POST /offer',
       upload: 'POST /leads/upload',
       score: 'POST /score',
+      status: 'GET /score/status',
       results: 'GET /results',
       export: 'GET /results/export'
     }
