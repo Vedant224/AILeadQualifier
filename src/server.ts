@@ -19,6 +19,7 @@ import dotenv from 'dotenv';
 
 // Import routes
 import offerRoutes from './routes/offerRoutes';
+import leadRoutes from './routes/leadRoutes';
 
 // Import middleware
 import { handleJsonParsingError } from './middleware/validation';
@@ -86,6 +87,7 @@ app.get('/health', (req, res) => {
  * API Routes
  */
 app.use('/offer', offerRoutes);
+app.use('/leads', leadRoutes);
 
 /**
  * Root endpoint with API information
