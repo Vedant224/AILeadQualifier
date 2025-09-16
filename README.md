@@ -2,6 +2,14 @@
 
 A production-ready backend service for lead qualification that combines rule-based scoring with AI-powered intent analysis. This service accepts product/offer information and lead data via CSV upload, then scores each lead's buying intent using a hybrid approach of deterministic rules and AI reasoning.
 
+## 🌐 Live Demo
+
+**🔗 Production API:** https://lead-scoring-backend-api.onrender.com/
+
+**📖 API Documentation:** https://lead-scoring-backend-api.onrender.com/ (root endpoint shows all available endpoints)
+
+**🧪 Quick Test:** Try the health check at https://lead-scoring-backend-api.onrender.com/health
+
 ## 🚀 Features
 
 - **RESTful API** with comprehensive endpoints for lead management
@@ -620,7 +628,7 @@ npm run docker:run
 docker-compose up -d
 ```
 
-**Live Demo**: [https://lead-scoring-backend.onrender.com](https://lead-scoring-backend.onrender.com) *(Replace with actual deployment URL)*
+**Live Demo**: [https://lead-scoring-backend-api.onrender.com](https://lead-scoring-backend-api.onrender.com)
 
 ## 🤝 API Usage Examples
 
@@ -710,6 +718,50 @@ MIT License - This project is created as a hiring assignment demonstrating backe
 - ✅ Multiple cloud platform support
 - ✅ Monitoring and health checks
 - ✅ Complete documentation with examples
+
+## 🎥 Demo & Presentation
+
+### Live API Demo
+**🔗 Production API:** https://lead-scoring-backend-api.onrender.com/
+
+### Video Demo (Loom)
+**📹 Loom Demo:** *[Create your Loom video here]*
+
+**What is Loom?** Loom is a screen recording tool perfect for creating professional API demos. Record a 3-5 minute video showing:
+
+1. **API Overview** - Navigate to the root endpoint to show available endpoints
+2. **Complete Workflow** - Demonstrate the full lead scoring process:
+   - Submit offer data via POST /offer
+   - Upload CSV file via POST /leads/upload  
+   - Execute scoring via POST /score
+   - View results via GET /score/results
+   - Export CSV via GET /score/results/export
+3. **Code Walkthrough** - Briefly explain the hybrid scoring architecture
+4. **Production Features** - Show health monitoring, error handling, etc.
+
+**How to create your Loom demo:**
+1. Go to [loom.com](https://loom.com) and create a free account
+2. Install the Loom browser extension or desktop app
+3. Record your screen while demonstrating the API
+4. Share the Loom link in your job application
+
+### Postman Collection
+Import the included `postman_collection.json` for easy API testing:
+1. Open Postman
+2. Import → Upload Files → Select `postman_collection.json`
+3. Update the base URL to your deployment URL
+4. Test all endpoints with sample data
+
+### Sample Test Data
+Use this sample CSV for demonstrations:
+```csv
+name,role,company,industry,location,linkedin_bio
+John Doe,CEO,TechCorp,Technology,San Francisco CA,Technology executive with 15 years experience in B2B SaaS
+Jane Smith,VP Marketing,SaaS Inc,Software,New York NY,Marketing leader focused on B2B growth and lead generation
+Mike Johnson,Sales Director,StartupXYZ,Technology,Austin TX,Sales professional specializing in enterprise software solutions
+Sarah Wilson,CTO,DataCorp,Analytics,Seattle WA,Technical leader with expertise in data analytics and AI solutions
+Tom Brown,Manager,RetailCo,Retail,Chicago IL,Operations manager in retail industry
+```
 
 ## 🆘 Troubleshooting
 
