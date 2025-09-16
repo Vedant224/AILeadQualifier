@@ -20,8 +20,7 @@
     "docker:dev": "bash scripts/docker-build.sh run-dev",
     "docker:stop": "bash scripts/docker-build.sh stop",
     "docker:logs": "bash scripts/docker-build.sh logs",
-    "prestart": "npm run build",
-    "postinstall": "npm run build"
+    "prestart": "npm run build"
   },
   "keywords": [
     "lead-scoring",
