@@ -19,9 +19,6 @@
     "MAX_FILE_SIZE": "10485760",
     "MAX_LEADS_PER_UPLOAD": "1000"
   },
-  "functions": {
-    "dist/server.js": {
-      "maxDuration": 30
-    }
-  }
+  "regions": ["iad1"],
+  "buildCommand": "npm run build"
 }
