@@ -425,26 +425,28 @@ src/
 
 ### Development Commands
 ```bash
-# Start development server with hot reload
-npm run dev
+# Development
+npm run dev              # Start development server with hot reload
+npm run build            # Build for production
+npm start               # Start production server
 
-# Build for production
-npm run build
+# Testing
+npm test                # Run all tests
+npm run test:watch      # Run tests in watch mode
+npm run test:integration # Run integration tests only
 
-# Start production server
-npm start
+# Code Quality
+npm run lint            # Lint TypeScript code
+npm run clean           # Clean build directory
 
-# Run tests
-npm test
+# Deployment
+npm run deploy          # Run deployment preparation script
+npm run health-check    # Check application health
 
-# Run tests in watch mode
-npm run test:watch
-
-# Lint code
-npm run lint
-
-# Clean build directory
-npm run clean
+# Docker
+npm run docker:build    # Build Docker image
+npm run docker:run      # Run Docker container
+npm run docker:dev      # Run development container
 ```
 
 ### Testing
@@ -548,21 +550,77 @@ npm run build
 NODE_ENV=production npm start
 ```
 
-### Docker (Optional)
-```bash
-# Build image
-docker build -t lead-scoring-api .
+### Docker Deployment
 
-# Run container
-docker run -p 3000:3000 -e GEMINI_API_KEY=your_key lead-scoring-api
+#### Quick Start with Docker
+```bash
+# Build and run with Docker Compose
+docker-compose up -d
+
+# Or build and run manually
+docker build -t lead-scoring-api .
+docker run -p 3000:3000 --env-file .env lead-scoring-api
+```
+
+#### Development with Docker
+```bash
+# Run development environment
+docker-compose --profile dev up
+
+# Build development image
+docker build --target builder -t lead-scoring-api:dev .
+```
+
+#### Production with Docker
+```bash
+# Build production image
+docker build --target production -t lead-scoring-api:prod .
+
+# Run with health checks and restart policy
+docker run -d \
+  --name lead-scoring-backend \
+  --restart unless-stopped \
+  -p 3000:3000 \
+  --env-file .env \
+  lead-scoring-api:prod
 ```
 
 ### Cloud Deployment
-The service is designed to deploy easily to:
-- **Render** - Zero-config deployment
-- **Railway** - Git-based deployment
-- **Vercel** - Serverless deployment
-- **Heroku** - Traditional PaaS
+
+The service is designed to deploy easily to multiple platforms:
+
+#### Render.com
+```bash
+# Deploy using render.yaml configuration
+git push origin main  # Auto-deploys on push
+```
+
+#### Railway
+```bash
+# Deploy using railway.json configuration
+railway login
+railway link
+railway up
+```
+
+#### Vercel
+```bash
+# Deploy using vercel.json configuration
+npm install -g vercel
+vercel --prod
+```
+
+#### Docker Deployment
+```bash
+# Build and run with Docker
+npm run docker:build
+npm run docker:run
+
+# Or use Docker Compose
+docker-compose up -d
+```
+
+**Live Demo**: [https://lead-scoring-backend.onrender.com](https://lead-scoring-backend.onrender.com) *(Replace with actual deployment URL)*
 
 ## 🤝 API Usage Examples
 
@@ -602,9 +660,56 @@ Sarah Johnson,VP Marketing,DataCorp,Software,New York NY,Marketing leader focuse
 Mike Wilson,Software Engineer,StartupInc,Technology,Austin TX,Full-stack developer passionate about AI and automation
 ```
 
+## 📊 Performance Considerations
+
+### Scalability
+- **Current Scope**: In-memory storage suitable for demonstration and small-scale usage
+- **Production Scaling**: Consider database integration for persistent storage
+- **Concurrent Users**: Handles multiple concurrent requests with proper error isolation
+- **Memory Management**: Automatic cleanup of processed data to prevent memory leaks
+
+### Limitations
+- **Data Persistence**: Data is lost on server restart (in-memory storage)
+- **File Size**: Maximum 10MB CSV files, 1000 leads per upload
+- **AI Rate Limits**: Subject to Google Gemini API rate limits
+- **Concurrent Scoring**: Single-threaded scoring process (can be optimized with worker threads)
+
+### Optimization Recommendations
+- Implement database storage for production use
+- Add Redis caching for AI responses
+- Use worker threads for CPU-intensive scoring operations
+- Implement request queuing for high-volume scenarios
+
+## 🔒 Security Considerations
+
+### Current Security Features
+- **Input Validation**: Comprehensive validation for all inputs
+- **Error Sanitization**: Safe error messages without sensitive data exposure
+- **CORS Configuration**: Configurable cross-origin resource sharing
+- **Rate Limiting**: Built-in rate limiting for API endpoints
+- **File Upload Security**: File type and size validation
+
+### Production Security Recommendations
+- Implement authentication and authorization
+- Add API key management for client access
+- Use HTTPS in production (handled by cloud platforms)
+- Implement request logging and monitoring
+- Add input sanitization for XSS prevention
+
 ## 📝 License
 
 MIT License - This project is created as a hiring assignment demonstrating backend API development, AI integration, and production-ready code practices.
+
+**Key Achievements Demonstrated:**
+- ✅ Clean, well-documented backend APIs
+- ✅ AI integration with Google Gemini
+- ✅ Comprehensive error handling and logging
+- ✅ Production-ready deployment configuration
+- ✅ Extensive testing coverage
+- ✅ Docker containerization
+- ✅ Multiple cloud platform support
+- ✅ Monitoring and health checks
+- ✅ Complete documentation with examples
 
 ## 🆘 Troubleshooting
 
@@ -617,31 +722,101 @@ echo $GEMINI_API_KEY
 
 # Test AI connectivity
 curl http://localhost:3000/health
+
+# Check AI service status specifically
+curl http://localhost:3000/health/metrics | jq '.data.environment.has_ai_key'
 ```
 
 **2. CSV Upload Issues**
-- Ensure CSV has all required columns
-- Check file size (max 10MB)
-- Verify CSV format (comma-separated, UTF-8)
+- Ensure CSV has all required columns: `name,role,company,industry,location,linkedin_bio`
+- Check file size (max 10MB by default)
+- Verify CSV format (comma-separated, UTF-8 encoding)
+- Test with sample CSV:
+```bash
+curl -X POST http://localhost:3000/leads/upload \
+  -F "file=@sample_leads.csv"
+```
 
 **3. Memory Issues**
 ```bash
 # Check system metrics
 curl http://localhost:3000/health/metrics
+
+# Monitor memory usage
+curl http://localhost:3000/health | jq '.data.checks.memory'
 ```
 
 **4. Port Already in Use**
 ```bash
 # Use different port
 PORT=3001 npm run dev
+
+# Or kill process using the port (Windows)
+netstat -ano | findstr :3000
+taskkill /PID <PID> /F
 ```
+
+**5. Docker Issues**
+```bash
+# Check Docker container logs
+docker logs lead-scoring-backend
+
+# Test container health
+docker exec lead-scoring-backend curl http://localhost:3000/health/live
+
+# Rebuild container
+docker-compose down && docker-compose up --build
+```
+
+**6. Deployment Issues**
+```bash
+# Test deployment locally
+npm run deploy
+
+# Check deployment health
+BASE_URL=https://your-app.onrender.com npm run test:deployment
+
+# Validate environment variables
+curl https://your-app.onrender.com/health/metrics
+```
+
+### Performance Optimization
+
+**1. Memory Usage**
+- Monitor heap usage via `/health/metrics`
+- Restart service if memory usage exceeds 90%
+- Consider increasing container memory limits
+
+**2. AI Service Optimization**
+- Implement request caching for repeated analyses
+- Use batch processing for large lead sets
+- Monitor AI service response times
+
+**3. File Upload Optimization**
+- Process CSV files in streams for large datasets
+- Implement file size validation before processing
+- Use compression for large file transfers
 
 ### Getting Help
 
-1. Check the health endpoint: `GET /health`
-2. Review server logs for detailed error information
-3. Verify environment variables are set correctly
-4. Ensure all prerequisites are met (Node.js version, API keys)
+1. **Health Checks**: `GET /health` for comprehensive system status
+2. **Logs**: Check application logs for detailed error information
+3. **Environment**: Verify all required environment variables are set
+4. **Prerequisites**: Ensure Node.js 18+, valid API keys, and proper network access
+5. **Documentation**: Review API documentation and examples
+6. **Testing**: Use provided Postman collection for endpoint testing
+
+### Debug Mode
+
+Enable debug logging for troubleshooting:
+```bash
+LOG_LEVEL=debug npm run dev
+```
+
+Or with Docker:
+```bash
+docker run -e LOG_LEVEL=debug -p 3000:3000 lead-scoring-api
+```
 
 ---
 
