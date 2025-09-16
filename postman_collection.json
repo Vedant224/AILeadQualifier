@@ -1,0 +1,360 @@
+{
+  "info": {
+    "name": "Lead Scoring Backend API",
+    "description": "Complete API collection for the Lead Scoring Backend service with rule-based and AI-powered lead qualification",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health & Status",
+      "item": [
+        {
+          "name": "System Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            },
+            "description": "Comprehensive health check including AI service, memory usage, and data store status"
+          },
+          "response": []
+        },
+        {
+          "name": "Liveness Probe",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health/live",
+              "host": ["{{baseUrl}}"],
+              "path": ["health", "live"]
+            },
+            "description": "Simple liveness check for container orchestrators"
+          },
+          "response": []
+        },
+        {
+          "name": "Readiness Probe",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health/ready",
+              "host": ["{{baseUrl}}"],
+              "path": ["health", "ready"]
+            },
+            "description": "Readiness check to determine if service can accept traffic"
+          },
+          "response": []
+        },
+        {
+          "name": "System Metrics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health/metrics",
+              "host": ["{{baseUrl}}"],
+              "path": ["health", "metrics"]
+            },
+            "description": "Detailed system metrics for monitoring"
+          },
+          "response": []
+        },
+        {
+          "name": "API Information",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": ["{{baseUrl}}"],
+              "path": [""]
+            },
+            "description": "Get API information and available endpoints"
+          },
+          "response": []
+        }
+      ],
+      "description": "Health monitoring and system status endpoints"
+    },
+    {
+      "name": "Offer Management",
+      "item": [
+        {
+          "name": "Submit Offer Information",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"AI Outreach Automation\",\n  \"value_props\": [\n    \"24/7 automated outreach\",\n    \"6x more qualified meetings\",\n    \"Personalized messaging at scale\",\n    \"Advanced lead scoring\"\n  ],\n  \"ideal_use_cases\": [\n    \"B2B SaaS mid-market\",\n    \"Technology companies\",\n    \"Sales teams 10-50 people\",\n    \"High-growth startups\"\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/offer",
+              "host": ["{{baseUrl}}"],
+              "path": ["offer"]
+            },
+            "description": "Submit product/offer information for lead scoring context"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Current Offer",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/offer",
+              "host": ["{{baseUrl}}"],
+              "path": ["offer"]
+            },
+            "description": "Retrieve currently stored offer information"
+          },
+          "response": []
+        }
+      ],
+      "description": "Endpoints for managing product/offer information"
+    },
+    {
+      "name": "Lead Management",
+      "item": [
+        {
+          "name": "Upload Lead CSV",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": [],
+                  "description": "CSV file with columns: name,role,company,industry,location,linkedin_bio"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/leads/upload",
+              "host": ["{{baseUrl}}"],
+              "path": ["leads", "upload"]
+            },
+            "description": "Upload CSV file containing lead data for scoring"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Lead Summary",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/leads",
+              "host": ["{{baseUrl}}"],
+              "path": ["leads"]
+            },
+            "description": "Get summary information about uploaded leads"
+          },
+          "response": []
+        }
+      ],
+      "description": "Endpoints for lead data upload and management"
+    },
+    {
+      "name": "Lead Scoring",
+      "item": [
+        {
+          "name": "Execute Lead Scoring",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/score",
+              "host": ["{{baseUrl}}"],
+              "path": ["score"]
+            },
+            "description": "Execute the complete lead scoring pipeline (requires offer and lead data)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Scoring Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/score/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["score", "status"]
+            },
+            "description": "Get current scoring system status and readiness"
+          },
+          "response": []
+        }
+      ],
+      "description": "Endpoints for executing and monitoring lead scoring"
+    },
+    {
+      "name": "Results & Export",
+      "item": [
+        {
+          "name": "Get All Results",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/results",
+              "host": ["{{baseUrl}}"],
+              "path": ["results"]
+            },
+            "description": "Get all scored lead results in JSON format"
+          },
+          "response": []
+        },
+        {
+          "name": "Get High Intent Leads",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/results?intent=High",
+              "host": ["{{baseUrl}}"],
+              "path": ["results"],
+              "query": [
+                {
+                  "key": "intent",
+                  "value": "High",
+                  "description": "Filter by intent level (High/Medium/Low)"
+                }
+              ]
+            },
+            "description": "Get only high-intent leads"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Top Scoring Leads",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/results?min_score=70&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["results"],
+              "query": [
+                {
+                  "key": "min_score",
+                  "value": "70",
+                  "description": "Minimum score threshold (0-100)"
+                },
+                {
+                  "key": "limit",
+                  "value": "20",
+                  "description": "Maximum number of results"
+                }
+              ]
+            },
+            "description": "Get top 20 leads with score 70 or higher"
+          },
+          "response": []
+        },
+        {
+          "name": "Export All Results as CSV",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/results/export",
+              "host": ["{{baseUrl}}"],
+              "path": ["results", "export"]
+            },
+            "description": "Export all results as CSV file"
+          },
+          "response": []
+        },
+        {
+          "name": "Export Filtered Results as CSV",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/results/export?intent=High&min_score=60",
+              "host": ["{{baseUrl}}"],
+              "path": ["results", "export"],
+              "query": [
+                {
+                  "key": "intent",
+                  "value": "High",
+                  "description": "Filter by intent level"
+                },
+                {
+                  "key": "min_score",
+                  "value": "60",
+                  "description": "Minimum score threshold"
+                }
+              ]
+            },
+            "description": "Export filtered results (high intent, score 60+) as CSV"
+          },
+          "response": []
+        }
+      ],
+      "description": "Endpoints for retrieving and exporting scored results"
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Set request timestamp",
+          "pm.globals.set('timestamp', new Date().toISOString());"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Basic response validation",
+          "pm.test('Response status code is valid', function () {",
+          "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 400, 404, 422, 500, 503]);",
+          "});",
+          "",
+          "// Check response time",
+          "pm.test('Response time is reasonable', function () {",
+          "    pm.expect(pm.response.responseTime).to.be.below(30000);",
+          "});",
+          "",
+          "// Validate JSON structure for successful responses",
+          "if (pm.response.code === 200 || pm.response.code === 201) {",
+          "    pm.test('Response has valid JSON structure', function () {",
+          "        const jsonData = pm.response.json();",
+          "        pm.expect(jsonData).to.have.property('data');",
+          "        pm.expect(jsonData).to.have.property('timestamp');",
+          "    });",
+          "}"
+        ]
+      }
+    }
+  ]
+}

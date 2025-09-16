@@ -21,10 +21,12 @@ import dotenv from 'dotenv';
 import offerRoutes from './routes/offerRoutes';
 import leadRoutes from './routes/leadRoutes';
 import scoringRoutes from './routes/scoringRoutes';
+import healthRoutes from './routes/healthRoutes';
 
 // Import middleware
 import { handleJsonParsingError } from './middleware/validation';
 import { errorLogger } from './middleware/requestLogger';
+import { globalErrorHandler, notFoundHandler, timeoutHandler } from './middleware/errorHandler';
 
 // Load environment variables
 dotenv.config();
@@ -85,8 +87,14 @@ app.get('/health', (req, res) => {
 });
 
 /**
+ * Request timeout middleware
+ */
+app.use(timeoutHandler(30000)); // 30 second timeout
+
+/**
  * API Routes
  */
+app.use('/health', healthRoutes);
 app.use('/offer', offerRoutes);
 app.use('/leads', leadRoutes);
 app.use('/score', scoringRoutes);
@@ -102,6 +110,9 @@ app.get('/', (req, res) => {
     description: 'Backend service for lead qualification using rule-based scoring and AI-powered intent analysis',
     endpoints: {
       health: 'GET /health',
+      liveness: 'GET /health/live',
+      readiness: 'GET /health/ready',
+      metrics: 'GET /health/metrics',
       offer: 'POST /offer',
       upload: 'POST /leads/upload',
       score: 'POST /score',
@@ -115,15 +126,7 @@ app.get('/', (req, res) => {
 /**
  * 404 handler for undefined routes
  */
-app.use('*', (req, res) => {
-  res.status(404).json({
-    error: {
-      code: 'NOT_FOUND',
-      message: `Route ${req.method} ${req.originalUrl} not found`,
-      timestamp: new Date().toISOString()
-    }
-  });
-});
+app.use('*', notFoundHandler);
 
 /**
  * Error logging middleware
@@ -132,19 +135,8 @@ app.use(errorLogger);
 
 /**
  * Global error handling middleware
- * Catches and formats all unhandled errors
  */
-app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  console.error('Unhandled error:', err);
-  
-  res.status(err.status || 500).json({
-    error: {
-      code: err.code || 'INTERNAL_ERROR',
-      message: NODE_ENV === 'development' ? err.message : 'Internal server error',
-      timestamp: new Date().toISOString()
-    }
-  });
-});
+app.use(globalErrorHandler);
 
 /**
  * Start the server
