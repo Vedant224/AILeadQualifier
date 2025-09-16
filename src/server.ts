@@ -39,8 +39,8 @@ const app = express();
 /**
  * Server configuration from environment variables
  */
-const PORT = process.env.PORT || 3000;
-const NODE_ENV = process.env.NODE_ENV || 'development';
+const PORT = process.env['PORT'] || 3000;
+const NODE_ENV = process.env['NODE_ENV'] || 'development';
 
 /**
  * Security middleware configuration
@@ -49,7 +49,7 @@ const NODE_ENV = process.env.NODE_ENV || 'development';
  */
 app.use(helmet());
 app.use(cors({
-  origin: process.env.ALLOWED_ORIGINS?.split(',') || '*',
+  origin: process.env['ALLOWED_ORIGINS']?.split(',') || '*',
   credentials: true
 }));
 
@@ -77,7 +77,7 @@ if (NODE_ENV === 'development') {
  * Basic health check endpoint
  * Returns server status and basic system information
  */
-app.get('/health', (req, res) => {
+app.get('/health', (_req, res) => {
   res.json({
     status: 'healthy',
     timestamp: new Date().toISOString(),
@@ -98,12 +98,11 @@ app.use('/health', healthRoutes);
 app.use('/offer', offerRoutes);
 app.use('/leads', leadRoutes);
 app.use('/score', scoringRoutes);
-app.use('/results', scoringRoutes); // Mount results endpoints
 
 /**
  * Root endpoint with API information
  */
-app.get('/', (req, res) => {
+app.get('/', (_req, res) => {
   res.json({
     name: 'Lead Scoring Backend API',
     version: '1.0.0',
@@ -117,8 +116,8 @@ app.get('/', (req, res) => {
       upload: 'POST /leads/upload',
       score: 'POST /score',
       status: 'GET /score/status',
-      results: 'GET /results',
-      export: 'GET /results/export'
+      results: 'GET /score/results',
+      export: 'GET /score/results/export'
     }
   });
 });
@@ -145,7 +144,7 @@ app.listen(PORT, () => {
   console.log(`🚀 Lead Scoring API server running on port ${PORT}`);
   console.log(`📊 Environment: ${NODE_ENV}`);
   console.log(`🔗 Health check: http://localhost:${PORT}/health`);
-  
+
   if (NODE_ENV === 'development') {
     console.log(`📖 API docs: http://localhost:${PORT}/`);
   }

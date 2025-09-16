@@ -188,8 +188,8 @@ export interface HealthResponse {
     /** Memory usage status */
     memory: ServiceCheck;
     
-    /** Application startup status */
-    startup: ServiceCheck;
+    /** Data store status */
+    data_store: ServiceCheck;
   };
 }
 

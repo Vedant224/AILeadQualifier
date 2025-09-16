@@ -153,7 +153,7 @@ export function formatErrorResponse(error: any, requestId?: string) {
     return {
       error: {
         code: ErrorCode.INTERNAL_ERROR,
-        message: process.env.NODE_ENV === 'development' 
+        message: process.env['NODE_ENV'] === 'development' 
           ? error.message 
           : 'Internal server error',
         timestamp: new Date().toISOString(),

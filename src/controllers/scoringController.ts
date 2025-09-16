@@ -25,7 +25,7 @@ import dataStore from '../services/dataStore';
  * @param req - Express request object
  * @param res - Express response object
  */
-export async function scoreLeads(req: Request, res: Response): Promise<void> {
+export async function scoreLeads(_req: Request, res: Response): Promise<void> {
   const startTime = Date.now();
   
   try {
@@ -112,12 +112,14 @@ export async function scoreLeads(req: Request, res: Response): Promise<void> {
         processing_time_ms: processingTime,
         completed_at: new Date().toISOString()
       },
-      errors: stats.failedScores > 0 ? [{
-        lead_name: 'Multiple leads',
-        error_type: 'data_processing',
-        message: `${stats.failedScores} leads failed scoring`,
-        fallback_applied: true
-      }] : undefined
+      ...(stats.failedScores > 0 && {
+        errors: [{
+          lead_name: 'Multiple leads',
+          error_type: 'data_processing' as const,
+          message: `${stats.failedScores} leads failed scoring`,
+          fallback_applied: true
+        }]
+      })
     };
     
     const response: ApiResponse<ScoringResponse> = {
@@ -382,7 +384,7 @@ export async function exportResults(req: Request, res: Response): Promise<void> 
  * @param req - Express request object
  * @param res - Express response object
  */
-export async function getScoringStatus(req: Request, res: Response): Promise<void> {
+export async function getScoringStatus(_req: Request, res: Response): Promise<void> {
   const startTime = Date.now();
   
   try {

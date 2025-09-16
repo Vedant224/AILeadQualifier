@@ -29,7 +29,7 @@ const storage = multer.memoryStorage();
  * @param callback - Multer callback function
  */
 function csvFileFilter(
-  req: Request,
+  _req: Request,
   file: Express.Multer.File,
   callback: multer.FileFilterCallback
 ) {
@@ -103,7 +103,7 @@ export const uploadCSV = multer({
  */
 export function handleMulterError(
   error: any,
-  req: Request,
+  _req: Request,
   res: any,
   next: any
 ) {

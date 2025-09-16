@@ -31,7 +31,7 @@ export {
 } from './lead';
 
 // API response models and interfaces
-export {
+export type {
   ApiResponse,
   ErrorResponse,
   UploadResponse,
@@ -39,7 +39,10 @@ export {
   ScoringResponse,
   ScoringError,
   HealthResponse,
-  ServiceCheck,
+  ServiceCheck
+} from './api';
+
+export {
   HttpStatus,
   ErrorCode
 } from './api';
@@ -50,7 +53,7 @@ export {
  * This utility type helps with type inference when working
  * with API response wrappers in client code.
  */
-export type ExtractApiData<T> = T extends ApiResponse<infer U> ? U : never;
+export type ExtractApiData<T> = T extends import('./api').ApiResponse<infer U> ? U : never;
 
 /**
  * Union type for all possible error codes
@@ -58,7 +61,7 @@ export type ExtractApiData<T> = T extends ApiResponse<infer U> ? U : never;
  * This type provides compile-time checking for error code usage
  * and ensures consistency across error handling.
  */
-export type AllErrorCodes = keyof typeof ErrorCode;
+export type AllErrorCodes = keyof typeof import('./api').ErrorCode;
 
 /**
  * Union type for all possible HTTP status codes
@@ -66,4 +69,4 @@ export type AllErrorCodes = keyof typeof ErrorCode;
  * This type provides compile-time checking for status code usage
  * and ensures consistency across response handling.
  */
-export type AllHttpStatus = keyof typeof HttpStatus;
+export type AllHttpStatus = keyof typeof import('./api').HttpStatus;

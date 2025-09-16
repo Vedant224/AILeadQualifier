@@ -10,7 +10,7 @@ import { LeadData, OfferPayload, ScoredLead, AIAnalysis, RuleScoreBreakdown, Int
 import { ruleEngine } from './ruleEngine';
 import { getAIService } from './aiService';
 import { logError, withErrorHandling } from '../utils/errors';
-import { generateIntentAnalysisPrompt } from '../utils/prompts';
+// import { generateIntentAnalysisPrompt } from '../utils/prompts';
 
 /**
  * Scoring configuration options
@@ -138,6 +138,7 @@ export class ScoringService {
       
       const scoredLead: ScoredLead = {
         ...lead,
+        uploaded_at: lead.uploaded_at || new Date(),
         intent: finalIntent,
         score: totalScore,
         reasoning: combinedReasoning,
@@ -318,7 +319,7 @@ export class ScoringService {
   private generateCombinedReasoning(
     ruleBreakdown: RuleScoreBreakdown,
     aiAnalysis: AIAnalysis,
-    lead: LeadData
+    _lead: LeadData
   ): string {
     const ruleParts: string[] = [];
     
@@ -370,6 +371,7 @@ export class ScoringService {
   private createErrorScoredLead(lead: LeadData, error: Error): ScoredLead {
     return {
       ...lead,
+      uploaded_at: lead.uploaded_at || new Date(),
       intent: 'Low',
       score: 0,
       reasoning: `Scoring failed: ${error.message}`,

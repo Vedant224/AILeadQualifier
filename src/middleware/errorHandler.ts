@@ -24,7 +24,8 @@ export function globalErrorHandler(
   error: any,
   req: Request,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
+
 ): void {
   // Generate request ID for error tracking
   const requestId = req.headers['x-request-id'] as string || 
@@ -152,7 +153,7 @@ export function globalErrorHandler(
   
   // Handle unknown errors (fallback)
   const unknownError = new ApiError(
-    process.env.NODE_ENV === 'development' 
+    process.env['NODE_ENV'] === 'development' 
       ? error.message || 'Unknown error occurred'
       : 'Internal server error',
     HttpStatus.INTERNAL_SERVER_ERROR,
@@ -160,7 +161,7 @@ export function globalErrorHandler(
     {
       error_type: 'unknown_error',
       error_name: error.name,
-      ...(process.env.NODE_ENV === 'development' && { stack: error.stack })
+      ...(process.env['NODE_ENV'] === 'development' && { stack: error.stack })
     }
   );
   
@@ -178,7 +179,7 @@ export function globalErrorHandler(
  * @param res - Express response object
  * @param next - Express next function
  */
-export function notFoundHandler(req: Request, res: Response, next: NextFunction): void {
+export function notFoundHandler(req: Request, _res: Response, next: NextFunction): void {
   const notFoundError = new ApiError(
     `Route ${req.method} ${req.originalUrl} not found`,
     HttpStatus.NOT_FOUND,
@@ -298,7 +299,7 @@ function extractFieldErrors(error: any): Record<string, string> {
  * @returns Sanitized error object
  */
 export function sanitizeError(error: any): any {
-  if (process.env.NODE_ENV === 'production') {
+  if (process.env['NODE_ENV'] === 'production') {
     // Remove sensitive fields in production
     const sanitized = { ...error };
     delete sanitized.stack;

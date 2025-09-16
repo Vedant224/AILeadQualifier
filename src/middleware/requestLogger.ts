@@ -25,7 +25,7 @@ export function requestLogger(endpoint: string) {
     console.log(`📥 ${timestamp} [${endpoint}] ${req.method} ${req.originalUrl}`);
     
     // Log request details in development
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env['NODE_ENV'] === 'development') {
       console.log(`   Headers: ${JSON.stringify(req.headers, null, 2)}`);
       if (req.body && Object.keys(req.body).length > 0) {
         console.log(`   Body: ${JSON.stringify(req.body, null, 2)}`);
@@ -42,7 +42,7 @@ export function requestLogger(endpoint: string) {
       console.log(`📤 ${responseTimestamp} [${endpoint}] ${res.statusCode} (${processingTime}ms)`);
       
       // Log response body in development (truncated for large responses)
-      if (process.env.NODE_ENV === 'development') {
+      if (process.env['NODE_ENV'] === 'development') {
         const bodyStr = JSON.stringify(body);
         const truncatedBody = bodyStr.length > 500 
           ? bodyStr.substring(0, 500) + '...[truncated]'
@@ -71,7 +71,7 @@ export function requestLogger(endpoint: string) {
 export function errorLogger(
   error: any,
   req: Request,
-  res: Response,
+  _res: Response,
   next: NextFunction
 ) {
   const timestamp = new Date().toISOString();
@@ -79,7 +79,7 @@ export function errorLogger(
   console.error(`❌ ${timestamp} [ERROR] ${req.method} ${req.originalUrl}`);
   console.error(`   Error: ${error.message}`);
   
-  if (process.env.NODE_ENV === 'development') {
+  if (process.env['NODE_ENV'] === 'development') {
     console.error(`   Stack: ${error.stack}`);
   }
   

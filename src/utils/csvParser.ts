@@ -60,17 +60,14 @@ export async function parseCSVFile(buffer: Buffer): Promise<CSVParseResult> {
     
     // Configure CSV parser
     const parser = csv({
-      // Skip empty lines
-      skipEmptyLines: true,
-      
       // Trim whitespace from headers and values
-      mapHeaders: ({ header }) => {
+      mapHeaders: ({ header }: { header: string }) => {
         const trimmedHeader = header.trim().toLowerCase();
         return trimmedHeader;
       },
       
       // Transform values to handle various data formats
-      mapValues: ({ value }) => {
+      mapValues: ({ value }: { value: string }) => {
         if (typeof value === 'string') {
           // Trim whitespace and handle quoted values
           let trimmed = value.trim();

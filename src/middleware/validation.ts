@@ -21,12 +21,12 @@ import { HttpStatus } from '../models';
 export function validateContentType(expectedType: string) {
   return (req: Request, res: Response, next: NextFunction) => {
     const contentType = req.get('Content-Type');
-    
+
     // Skip validation for GET requests (no body expected)
     if (req.method === 'GET') {
       return next();
     }
-    
+
     // Check if Content-Type matches expected type
     if (!contentType || !contentType.includes(expectedType)) {
       const error = new ValidationError(
@@ -38,12 +38,13 @@ export function validateContentType(expectedType: string) {
           path: req.path
         }
       );
-      
-      return res.status(HttpStatus.BAD_REQUEST).json(
+
+      res.status(HttpStatus.BAD_REQUEST).json(
         formatErrorResponse(error)
       );
+      return;
     }
-    
+
     next();
   };
 }
@@ -60,7 +61,7 @@ export function validateContentType(expectedType: string) {
 export function validateBodySize(maxSizeBytes: number) {
   return (req: Request, res: Response, next: NextFunction) => {
     const contentLength = req.get('Content-Length');
-    
+
     if (contentLength && parseInt(contentLength) > maxSizeBytes) {
       const error = new ValidationError(
         `Request body too large. Maximum size is ${maxSizeBytes} bytes`,
@@ -70,12 +71,13 @@ export function validateBodySize(maxSizeBytes: number) {
           path: req.path
         }
       );
-      
-      return res.status(HttpStatus.BAD_REQUEST).json(
+
+      res.status(HttpStatus.BAD_REQUEST).json(
         formatErrorResponse(error)
       );
+      return;
     }
-    
+
     next();
   };
 }
@@ -93,7 +95,7 @@ export function validateBodySize(maxSizeBytes: number) {
  */
 export function handleJsonParsingError(
   error: any,
-  req: Request,
+  _req: Request,
   res: Response,
   next: NextFunction
 ) {
@@ -103,15 +105,16 @@ export function handleJsonParsingError(
       {
         error_type: 'json_parsing',
         original_error: error.message,
-        path: req.path
+        path: _req.path
       }
     );
-    
-    return res.status(HttpStatus.BAD_REQUEST).json(
+
+    res.status(HttpStatus.BAD_REQUEST).json(
       formatErrorResponse(validationError)
     );
+    return;
   }
-  
+
   next(error);
 }
 
@@ -127,18 +130,18 @@ export function handleJsonParsingError(
  */
 export function rateLimit(maxRequests: number, windowMs: number) {
   const requests = new Map<string, { count: number; resetTime: number }>();
-  
-  return (req: Request, res: Response, next: NextFunction) => {
+
+  return (req: Request, res: Response, next: NextFunction): void => {
     const clientId = req.ip || 'unknown';
     const now = Date.now();
-    
+
     // Clean up expired entries
     for (const [key, value] of requests.entries()) {
       if (now > value.resetTime) {
         requests.delete(key);
       }
     }
-    
+
     // Get or create client record
     let clientRecord = requests.get(clientId);
     if (!clientRecord || now > clientRecord.resetTime) {
@@ -148,7 +151,7 @@ export function rateLimit(maxRequests: number, windowMs: number) {
       };
       requests.set(clientId, clientRecord);
     }
-    
+
     // Check rate limit
     if (clientRecord.count >= maxRequests) {
       const error = new ValidationError(
@@ -159,22 +162,23 @@ export function rateLimit(maxRequests: number, windowMs: number) {
           reset_time: new Date(clientRecord.resetTime).toISOString()
         }
       );
-      
-      return res.status(HttpStatus.TOO_MANY_REQUESTS).json(
+
+      res.status(HttpStatus.TOO_MANY_REQUESTS).json(
         formatErrorResponse(error)
       );
+      return;
     }
-    
+
     // Increment request count
     clientRecord.count++;
-    
+
     // Add rate limit headers
     res.set({
       'X-RateLimit-Limit': maxRequests.toString(),
       'X-RateLimit-Remaining': (maxRequests - clientRecord.count).toString(),
       'X-RateLimit-Reset': new Date(clientRecord.resetTime).toISOString()
     });
-    
-    next();
+
+    return next();
   };
 }

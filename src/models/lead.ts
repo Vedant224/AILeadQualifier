@@ -60,6 +60,9 @@ export interface LeadData {
   
   /** LinkedIn bio or professional summary */
   linkedin_bio: string;
+  
+  /** Timestamp when the lead was uploaded (optional, added during processing) */
+  uploaded_at?: Date;
 }
 
 /**

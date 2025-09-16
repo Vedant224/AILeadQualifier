@@ -22,39 +22,39 @@ import dataStore from '../services/dataStore';
  * @param req - Express request object
  * @param res - Express response object
  */
-export async function healthCheck(req: Request, res: Response): Promise<void> {
+export async function healthCheck(_req: Request, res: Response): Promise<void> {
   const startTime = Date.now();
-  
+
   try {
     console.log('🔍 Performing comprehensive health check...');
-    
+
     // Perform all health checks in parallel
     const [aiCheck, memoryCheck, dataStoreCheck] = await Promise.allSettled([
       checkAIService(),
       checkMemoryUsage(),
       checkDataStore()
     ]);
-    
+
     // Process check results
     const checks = {
       ai_service: getCheckResult(aiCheck),
       memory: getCheckResult(memoryCheck),
       data_store: getCheckResult(dataStoreCheck)
     };
-    
+
     // Determine overall system status
     const overallStatus = determineOverallStatus(checks);
-    
+
     const processingTime = Date.now() - startTime;
-    
+
     const healthResponse: HealthResponse = {
       status: overallStatus,
       timestamp: new Date().toISOString(),
-      environment: process.env.NODE_ENV || 'development',
+      environment: process.env['NODE_ENV'] || 'development',
       version: '1.0.0',
       checks
     };
-    
+
     const response: ApiResponse<HealthResponse> = {
       data: healthResponse,
       timestamp: new Date().toISOString(),
@@ -64,24 +64,24 @@ export async function healthCheck(req: Request, res: Response): Promise<void> {
         node_version: process.version
       }
     };
-    
+
     // Set appropriate HTTP status based on health
-    const httpStatus = overallStatus === 'healthy' ? HttpStatus.OK : 
-                      overallStatus === 'degraded' ? HttpStatus.OK : 
-                      HttpStatus.SERVICE_UNAVAILABLE;
-    
+    const httpStatus = overallStatus === 'healthy' ? HttpStatus.OK :
+      overallStatus === 'degraded' ? HttpStatus.OK :
+        HttpStatus.SERVICE_UNAVAILABLE;
+
     console.log(`✅ Health check complete: ${overallStatus} (${processingTime}ms)`);
-    
+
     res.status(httpStatus).json(response);
-    
+
   } catch (error) {
     logError(error, 'health_check');
-    
+
     // Return unhealthy status on error
     const errorResponse: HealthResponse = {
       status: 'unhealthy',
       timestamp: new Date().toISOString(),
-      environment: process.env.NODE_ENV || 'development',
+      environment: process.env['NODE_ENV'] || 'development',
       version: '1.0.0',
       checks: {
         ai_service: {
@@ -101,7 +101,7 @@ export async function healthCheck(req: Request, res: Response): Promise<void> {
         }
       }
     };
-    
+
     res.status(HttpStatus.SERVICE_UNAVAILABLE).json({
       data: errorResponse,
       timestamp: new Date().toISOString(),
@@ -124,7 +124,7 @@ export async function healthCheck(req: Request, res: Response): Promise<void> {
  * @param req - Express request object
  * @param res - Express response object
  */
-export async function livenessProbe(req: Request, res: Response): Promise<void> {
+export async function livenessProbe(_req: Request, res: Response): Promise<void> {
   res.status(HttpStatus.OK).json({
     status: 'alive',
     timestamp: new Date().toISOString(),
@@ -143,20 +143,20 @@ export async function livenessProbe(req: Request, res: Response): Promise<void> 
  * @param req - Express request object
  * @param res - Express response object
  */
-export async function readinessProbe(req: Request, res: Response): Promise<void> {
+export async function readinessProbe(_req: Request, res: Response): Promise<void> {
   const startTime = Date.now();
-  
+
   try {
     // Quick readiness checks
     const isReady = await Promise.race([
       checkServiceReadiness(),
-      new Promise<boolean>((_, reject) => 
+      new Promise<boolean>((_, reject) =>
         setTimeout(() => reject(new Error('Readiness check timeout')), 5000)
       )
     ]);
-    
+
     const processingTime = Date.now() - startTime;
-    
+
     if (isReady) {
       res.status(HttpStatus.OK).json({
         status: 'ready',
@@ -171,10 +171,10 @@ export async function readinessProbe(req: Request, res: Response): Promise<void>
         reason: 'Service dependencies not ready'
       });
     }
-    
+
   } catch (error) {
     logError(error, 'readiness_probe');
-    
+
     res.status(HttpStatus.SERVICE_UNAVAILABLE).json({
       status: 'not_ready',
       timestamp: new Date().toISOString(),
@@ -194,14 +194,14 @@ export async function readinessProbe(req: Request, res: Response): Promise<void>
  * @param req - Express request object
  * @param res - Express response object
  */
-export async function systemMetrics(req: Request, res: Response): Promise<void> {
+export async function systemMetrics(_req: Request, res: Response): Promise<void> {
   const startTime = Date.now();
-  
+
   try {
     const memoryUsage = process.memoryUsage();
     const cpuUsage = process.cpuUsage();
     const storageStats = dataStore.getStorageStats();
-    
+
     const metrics = {
       system: {
         uptime_seconds: Math.floor(process.uptime()),
@@ -229,14 +229,14 @@ export async function systemMetrics(req: Request, res: Response): Promise<void> 
         last_updated: storageStats.lastUpdated
       },
       environment: {
-        node_env: process.env.NODE_ENV || 'development',
-        has_ai_key: !!process.env.GEMINI_API_KEY,
-        port: process.env.PORT || 3000
+        node_env: process.env['NODE_ENV'] || 'development',
+        has_ai_key: !!process.env['GEMINI_API_KEY'],
+        port: process.env['PORT'] || 3000
       }
     };
-    
+
     const processingTime = Date.now() - startTime;
-    
+
     res.status(HttpStatus.OK).json({
       data: metrics,
       timestamp: new Date().toISOString(),
@@ -244,10 +244,10 @@ export async function systemMetrics(req: Request, res: Response): Promise<void> 
         processing_time_ms: processingTime
       }
     });
-    
+
   } catch (error) {
     logError(error, 'system_metrics');
-    
+
     res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       error: {
         code: 'METRICS_ERROR',
@@ -263,34 +263,34 @@ export async function systemMetrics(req: Request, res: Response): Promise<void> 
  */
 async function checkAIService(): Promise<ServiceCheck> {
   const startTime = Date.now();
-  
+
   try {
     // Only check if API key is configured
-    if (!process.env.GEMINI_API_KEY) {
+    if (!process.env['GEMINI_API_KEY']) {
       return {
         status: 'degraded',
         details: 'AI service not configured (missing API key)',
         last_checked: new Date().toISOString()
       };
     }
-    
+
     const aiService = getAIService();
     const connectivityResult = await aiService.testConnectivity();
-    
+
     const responseTime = Date.now() - startTime;
-    
+
     return {
       status: connectivityResult.connected ? 'healthy' : 'unhealthy',
       response_time_ms: responseTime,
-      details: connectivityResult.connected 
+      details: connectivityResult.connected
         ? 'AI service responding normally'
         : `AI service error: ${connectivityResult.error}`,
       last_checked: new Date().toISOString()
     };
-    
+
   } catch (error) {
     const responseTime = Date.now() - startTime;
-    
+
     return {
       status: 'unhealthy',
       response_time_ms: responseTime,
@@ -307,10 +307,10 @@ async function checkMemoryUsage(): Promise<ServiceCheck> {
   try {
     const memoryUsage = process.memoryUsage();
     const heapUsagePercentage = (memoryUsage.heapUsed / memoryUsage.heapTotal) * 100;
-    
+
     let status: 'healthy' | 'degraded' | 'unhealthy' = 'healthy';
     let details = `Heap usage: ${heapUsagePercentage.toFixed(1)}%`;
-    
+
     if (heapUsagePercentage > 90) {
       status = 'unhealthy';
       details += ' (Critical: Very high memory usage)';
@@ -318,13 +318,13 @@ async function checkMemoryUsage(): Promise<ServiceCheck> {
       status = 'degraded';
       details += ' (Warning: High memory usage)';
     }
-    
+
     return {
       status,
       details,
       last_checked: new Date().toISOString()
     };
-    
+
   } catch (error) {
     return {
       status: 'unhealthy',
@@ -340,16 +340,15 @@ async function checkMemoryUsage(): Promise<ServiceCheck> {
 async function checkDataStore(): Promise<ServiceCheck> {
   try {
     const stats = dataStore.getStorageStats();
-    
-    // Basic functionality test
-    const testKey = `health_check_${Date.now()}`;
-    
+
+    // Basic functionality test - data store is operational
+
     return {
       status: 'healthy',
       details: `Data store operational. Leads: ${stats.leadCount}, Results: ${stats.scoredResultCount}`,
       last_checked: new Date().toISOString()
     };
-    
+
   } catch (error) {
     return {
       status: 'unhealthy',
@@ -367,10 +366,10 @@ async function checkServiceReadiness(): Promise<boolean> {
     // Check if essential services are available
     const memoryUsage = process.memoryUsage();
     const heapUsagePercentage = (memoryUsage.heapUsed / memoryUsage.heapTotal) * 100;
-    
+
     // Service is ready if memory usage is reasonable
     return heapUsagePercentage < 95;
-    
+
   } catch (error) {
     return false;
   }
@@ -396,7 +395,7 @@ function getCheckResult(result: PromiseSettledResult<ServiceCheck>): ServiceChec
  */
 function determineOverallStatus(checks: Record<string, ServiceCheck>): 'healthy' | 'degraded' | 'unhealthy' {
   const statuses = Object.values(checks).map(check => check.status);
-  
+
   if (statuses.includes('unhealthy')) {
     return 'unhealthy';
   } else if (statuses.includes('degraded')) {

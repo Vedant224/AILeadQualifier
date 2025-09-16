@@ -228,7 +228,7 @@ export async function uploadLeads(req: Request, res: Response): Promise<void> {
  * @param req - Express request object
  * @param res - Express response object
  */
-export async function getLeadsSummary(req: Request, res: Response): Promise<void> {
+export async function getLeadsSummary(_req: Request, res: Response): Promise<void> {
   const startTime = Date.now();
   
   try {
